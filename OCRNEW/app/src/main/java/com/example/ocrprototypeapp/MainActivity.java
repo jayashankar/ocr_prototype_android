@@ -16,17 +16,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.ocrprototypeapp.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -45,19 +43,25 @@ import java.io.OutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button googleMLButton;
+    Button googleMLButton, tesseractButton;
     ImageView previewImageView;
-    TextView recognizedTextView;
+    EditText recognizedEditText;
+
+    public static final int MLKIT = 1;
+    public static final int TESSERACT = 2;
+
+    Integer selectedOption = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        googleMLButton = findViewById(R.id.GoogleMLKit);
+        googleMLButton = findViewById(R.id.GoogleMLKitButton);
+        tesseractButton = findViewById(R.id.TesseractButton);
         previewImageView = findViewById(R.id.PreviewImageView);
-        recognizedTextView = findViewById(R.id.recognizedTextView);
-        recognizedTextView.setMovementMethod(new ScrollingMovementMethod());
+        recognizedEditText = findViewById(R.id.recognizedEditText);
+        recognizedEditText.setMovementMethod(new ScrollingMovementMethod());
 
         PhotoViewAttacher pAttacher;
         pAttacher = new PhotoViewAttacher(previewImageView);
@@ -66,12 +70,18 @@ public class MainActivity extends AppCompatActivity {
         googleMLButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedOption = MLKIT;
                 showAddPhotoDialogueFragment();
             }
         });
 
-       // copyAssets();
-
+        tesseractButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedOption = TESSERACT;
+                showAddPhotoDialogueFragment();
+            }
+        });
 
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -122,15 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 final InputStream imageStream = getContentResolver().openInputStream(imageUri);
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 previewImageView.setImageBitmap(selectedImage);
-
-//                try {
-//                    recognizedTextView.setText(extractText(selectedImage));
-//                } catch (Exception e) {
-//                    Log.d("ERR", e.getLocalizedMessage());
-//                }
-
-                recognizedTextView.setText("");
-
+                recognizedEditText.setText("");
                 invokeGoogleMLRecognizer(selectedImage);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -156,46 +158,6 @@ public class MainActivity extends AppCompatActivity {
         String extractedText = tessBaseApi.getUTF8Text();
         tessBaseApi.end();
         return extractedText;
-    }
-
-    private void copyAssets() {
-        AssetManager assetManager = getAssets();
-        String[] files = null;
-        try {
-            files = assetManager.list("");
-        } catch (IOException e) {
-            Log.e("tag", "Failed to get asset file list.", e);
-        }
-        if (files != null) for (String filename : files) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = assetManager.open(filename);
-                File outFile = new File(getExternalFilesDir(null), File.separator + "tessdata" + File.separator + filename);
-                outFile.mkdirs();
-
-                out = new FileOutputStream(outFile);
-                copyFile(in, out);
-            } catch(Exception e) {
-                Log.e("tag", "Failed to copy asset file: " + filename, e);
-            }
-            finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        // NOOP
-                    }
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        // NOOP
-                    }
-                }
-            }
-        }
     }
 
 
@@ -224,29 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void processResult(FirebaseVisionText result) {
         String resultText = result.getText();
-        recognizedTextView.setText(resultText);
-
-//        for (FirebaseVisionText.TextBlock block: result.getTextBlocks()) {
-//            String blockText = block.getText();
-//            Float blockConfidence = block.getConfidence();
-//            List<RecognizedLanguage> blockLanguages = block.getRecognizedLanguages();
-//            Point[] blockCornerPoints = block.getCornerPoints();
-//            Rect blockFrame = block.getBoundingBox();
-//            for (FirebaseVisionText.Line line: block.getLines()) {
-//                String lineText = line.getText();
-//                Float lineConfidence = line.getConfidence();
-//                List<RecognizedLanguage> lineLanguages = line.getRecognizedLanguages();
-//                Point[] lineCornerPoints = line.getCornerPoints();
-//                Rect lineFrame = line.getBoundingBox();
-//                for (FirebaseVisionText.Element element: line.getElements()) {
-//                    String elementText = element.getText();
-//                    Float elementConfidence = element.getConfidence();
-//                    List<RecognizedLanguage> elementLanguages = element.getRecognizedLanguages();
-//                    Point[] elementCornerPoints = element.getCornerPoints();
-//                    Rect elementFrame = element.getBoundingBox();
-//                }
-//            }
-//        }
+        recognizedEditText.setText(resultText);
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {
@@ -258,15 +198,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
-    }
-
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while((read = in.read(buffer)) != -1){
-            out.write(buffer, 0, read);
-        }
     }
 
 }

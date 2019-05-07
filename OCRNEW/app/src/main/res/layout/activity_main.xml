@@ -1,73 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textStyle="bold"
-            android:text="Selected Image:"/>
+            android:layout_height="200dp"
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/PreviewImageView"
-            android:padding="5dp"
-            android:scaleType="centerInside"
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Selected Image:"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/PreviewImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                android:scaleType="centerInside" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="200dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Recognized Text:"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/recognizedEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:scrollbars="vertical"
+                android:textAlignment="textStart"
+                android:textColor="@color/blackColor"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/GoogleMLKitButton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/round_shape_button"
+                android:gravity="center"
+                android:text="Google ML Kit"
+                android:textColor="@color/whiteColor"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/TesseractButton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/round_shape_button"
+                android:gravity="center"
+                android:text="Tesseract"
+                android:textColor="@color/whiteColor"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:textStyle="bold"
-            android:text="Recognized Text:"/>
-
-        <TextView
-            android:id="@+id/recognizedTextView"
-            android:padding="10dp"
-            android:textSize="16sp"
-            android:scrollbars = "vertical"
-            android:textColor="@color/blackColor"
-            android:scaleType="centerInside"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/GoogleMLKit"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:textColor="@color/whiteColor"
-            android:layout_centerInParent="true"
-            android:textStyle="bold"
-            android:background="@drawable/round_shape_button"
-            android:text="Google ML Kit"/>
-
-    </RelativeLayout>
-
-</androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>
