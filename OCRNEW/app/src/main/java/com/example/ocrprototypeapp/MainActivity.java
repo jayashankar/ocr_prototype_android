@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -40,15 +42,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     Button googleMLButton, tesseractButton;
     ImageView previewImageView;
     EditText recognizedEditText;
+    LinearLayout progressBarLayout;
 
     public static final int MLKIT = 1;
     public static final int TESSERACT = 2;
+
+    private String pictureImagePath = "";
 
     Integer selectedOption = 0;
 
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         previewImageView = findViewById(R.id.PreviewImageView);
         recognizedEditText = findViewById(R.id.recognizedEditText);
         recognizedEditText.setMovementMethod(new ScrollingMovementMethod());
+        progressBarLayout = findViewById(R.id.ProgressBarLayout);
 
         PhotoViewAttacher pAttacher;
         pAttacher = new PhotoViewAttacher(previewImageView);
@@ -111,7 +119,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void showCamera() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = timeStamp + ".jpg";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        pictureImagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
+        File file = new File(pictureImagePath);
+        Uri outputFileUri = Uri.fromFile(file);
+
         Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         startActivityForResult(takePicture, 101);
     }
 
@@ -133,15 +149,28 @@ public class MainActivity extends AppCompatActivity {
                 final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 previewImageView.setImageBitmap(selectedImage);
                 recognizedEditText.setText("");
-                invokeGoogleMLRecognizer(selectedImage);
+                progressBarLayout.setVisibility(View.VISIBLE);
+
+                if (selectedOption == MLKIT) {
+                    invokeGoogleMLRecognizer(selectedImage);
+                } else if (selectedOption == TESSERACT) {
+
+                }
+
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
         } else if (reqCode == 101 && resultCode == RESULT_OK) {
-            Uri selectedImage = data.getData();
-            //imageview.setImageURI(selectedImage);
+            File imgFile = new  File(pictureImagePath);
+            if(imgFile.exists()){
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                previewImageView.setImageBitmap(myBitmap);
+
+            }
+
         }
         else {
             Toast.makeText(MainActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
@@ -187,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
     private void processResult(FirebaseVisionText result) {
         String resultText = result.getText();
         recognizedEditText.setText(resultText);
+        progressBarLayout.setVisibility(View.GONE);
     }
 
     public static boolean hasPermissions(Context context, String... permissions) {

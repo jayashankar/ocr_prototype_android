@@ -8,92 +8,135 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Selected Image:"
-                android:textStyle="bold" />
+       <RelativeLayout
+           android:layout_height="match_parent"
+           android:layout_width="match_parent">
 
-            <ImageView
-                android:id="@+id/PreviewImageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="5dp"
-                android:scaleType="centerInside" />
+           <LinearLayout
+               android:layout_weight="1"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical">
 
-        </LinearLayout>
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="200dp"
+                   android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="vertical">
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:padding="10dp"
+                       android:text="Selected Image:"
+                       android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="Recognized Text:"
-                android:textStyle="bold" />
+                   <ImageView
+                       android:id="@+id/PreviewImageView"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:padding="5dp"
+                       android:scaleType="centerInside" />
 
-            <EditText
-                android:id="@+id/recognizedEditText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:scrollbars="vertical"
-                android:textAlignment="textStart"
-                android:textColor="@color/blackColor"
-                android:textSize="16sp" />
+               </LinearLayout>
 
-        </LinearLayout>
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="200dp"
+                   android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                   <TextView
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:padding="10dp"
+                       android:text="Recognized Text:"
+                       android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/GoogleMLKitButton"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/round_shape_button"
-                android:gravity="center"
-                android:text="Google ML Kit"
-                android:textColor="@color/whiteColor"
-                android:textStyle="bold" />
+                   <EditText
+                       android:id="@+id/recognizedEditText"
+                       android:layout_width="match_parent"
+                       android:layout_height="match_parent"
+                       android:padding="10dp"
+                       android:scaleType="centerInside"
+                       android:scrollbars="vertical"
+                       android:textAlignment="textStart"
+                       android:textColor="@color/blackColor"
+                       android:textSize="16sp" />
 
-        </RelativeLayout>
+               </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+               <RelativeLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/TesseractButton"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/round_shape_button"
-                android:gravity="center"
-                android:text="Tesseract"
-                android:textColor="@color/whiteColor"
-                android:textStyle="bold" />
+                   <Button
+                       android:id="@+id/GoogleMLKitButton"
+                       android:layout_width="150dp"
+                       android:layout_height="40dp"
+                       android:layout_centerInParent="true"
+                       android:layout_marginTop="20dp"
+                       android:layout_marginBottom="20dp"
+                       android:background="@drawable/round_shape_button"
+                       android:gravity="center"
+                       android:text="Google ML Kit"
+                       android:textColor="@color/whiteColor"
+                       android:textStyle="bold" />
 
-        </RelativeLayout>
+               </RelativeLayout>
+
+               <RelativeLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content">
+
+                   <Button
+                       android:id="@+id/TesseractButton"
+                       android:layout_width="150dp"
+                       android:layout_height="40dp"
+                       android:layout_centerInParent="true"
+                       android:layout_marginTop="20dp"
+                       android:layout_marginBottom="20dp"
+                       android:background="@drawable/round_shape_button"
+                       android:gravity="center"
+                       android:text="Tesseract"
+                       android:textColor="@color/whiteColor"
+                       android:textStyle="bold" />
+
+               </RelativeLayout>
+
+           </LinearLayout>
+
+           <LinearLayout
+               android:id="@+id/ProgressBarLayout"
+               android:background="#D3D3D3F2"
+               android:layout_width="match_parent"
+               android:clickable="true"
+               android:layout_height="match_parent"
+               android:orientation="vertical"
+               android:gravity="center"
+               android:visibility="gone">
+
+               <ProgressBar
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+
+               <TextView
+                   android:layout_marginTop="10dp"
+                   android:textSize="16sp"
+                   android:textStyle="bold"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Processing..."/>
+
+
+           </LinearLayout>
+
+       </RelativeLayout>
 
     </LinearLayout>
+
+
 
 </ScrollView>
