@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.1'
     implementation 'com.google.firebase:firebase-ml-vision:19.0.3'
     implementation 'com.commit451:PhotoView:1.2.4'
-    implementation 'com.rmtheis:tess-two:9.0.0'
+    implementation(name:'tesseract4android-release', ext:'aar')
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -3,6 +3,7 @@ package com.example.ocrprototypeapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void showAddPhotoDialogueFragment() {
+    private void showAddPhotoDialogueFragment() {
         FragmentManager fm = getSupportFragmentManager();
         ListDialogFragment dialogueFragment = new ListDialogFragment();
         dialogueFragment.show(fm, "google_ml");
@@ -118,17 +119,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    void showCamera() {
+    private void showCamera() {
+        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            takePicture.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri());
+        } else {
+            File file = new File(getPhotoFileUri().getPath());
+            Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
+            takePicture.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+        }
+
+        startActivityForResult(takePicture, 101);
+    }
+
+    Uri getPhotoFileUri() {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = timeStamp + ".jpg";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         pictureImagePath = storageDir.getAbsolutePath() + "/" + imageFileName;
         File file = new File(pictureImagePath);
         Uri outputFileUri = Uri.fromFile(file);
-
-        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-        startActivityForResult(takePicture, 101);
+        return outputFileUri;
     }
 
     void showGallery() {
@@ -166,9 +178,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (reqCode == 101 && resultCode == RESULT_OK) {
             File imgFile = new  File(pictureImagePath);
             if(imgFile.exists()){
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                previewImageView.setImageBitmap(myBitmap);
 
+                progressBarLayout.setVisibility(View.VISIBLE);
+
+                if (selectedOption == MLKIT) {
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    previewImageView.setImageBitmap(myBitmap);
+                    invokeGoogleMLRecognizer(myBitmap);
+                } else if (selectedOption == TESSERACT) {
+
+                }
             }
 
         }
