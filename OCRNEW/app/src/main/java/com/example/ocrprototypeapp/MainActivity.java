@@ -15,6 +15,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -99,6 +100,63 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                copyTrainingDataToInternalStorage();
+            }
+        });
+
+    }
+
+    private void copyTrainingDataToInternalStorage() {
+        InputStream chineseTrainingFileStream = getResources().openRawResource(R.raw.chi_sim);
+        File storageDir = getExternalFilesDir(null);
+        String folderPath = storageDir.getAbsolutePath() + "/" + "tessdata";
+        File folder = new File(folderPath);
+        folder.mkdir();
+        String filePath = folderPath + "/chi_sim.traineddata";
+        File file = new File(filePath);
+        try {
+            file.createNewFile();
+        } catch (Exception e) {
+            Log.d("Error", "Error occurred during trained data file creation");
+            e.printStackTrace();
+        }
+
+        copyInputStreamToFile(chineseTrainingFileStream, file);
+    }
+
+    // Copy an InputStream to a File.
+    private void copyInputStreamToFile(InputStream in, File file) {
+        OutputStream out = null;
+
+        try {
+            out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            // Ensure that the InputStreams are closed even if there's an exception.
+            try {
+                if ( out != null ) {
+                    out.close();
+                }
+
+                // If you want to close the "in" InputStream yourself then remove this
+                // from here but ensure that you close it yourself eventually.
+                in.close();
+            }
+            catch ( IOException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void showAddPhotoDialogueFragment() {
@@ -163,12 +221,20 @@ public class MainActivity extends AppCompatActivity {
                 recognizedEditText.setText("");
                 progressBarLayout.setVisibility(View.VISIBLE);
 
-                if (selectedOption == MLKIT) {
-                    invokeGoogleMLRecognizer(selectedImage);
-                } else if (selectedOption == TESSERACT) {
-
-                }
-
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (selectedOption == MLKIT) {
+                            invokeGoogleMLRecognizer(selectedImage);
+                        } else if (selectedOption == TESSERACT) {
+                            try {
+                                recognizedEditText.setText(extractText(selectedImage));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -180,14 +246,24 @@ public class MainActivity extends AppCompatActivity {
             if(imgFile.exists()){
 
                 progressBarLayout.setVisibility(View.VISIBLE);
+                final Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                previewImageView.setImageBitmap(myBitmap);
 
-                if (selectedOption == MLKIT) {
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                    previewImageView.setImageBitmap(myBitmap);
-                    invokeGoogleMLRecognizer(myBitmap);
-                } else if (selectedOption == TESSERACT) {
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (selectedOption == MLKIT) {
+                            invokeGoogleMLRecognizer(myBitmap);
+                        } else if (selectedOption == TESSERACT) {
+                            try {
+                                recognizedEditText.setText(extractText(myBitmap));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
 
-                }
             }
 
         }
@@ -201,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
         File outFile = new File(getExternalFilesDir(null), File.separator);
 
-        tessBaseApi.init(outFile.getAbsolutePath(), "eng");
+        tessBaseApi.init(outFile.getAbsolutePath(), "chi_sim");
         tessBaseApi.setImage(bitmap);
         String extractedText = tessBaseApi.getUTF8Text();
         tessBaseApi.end();
